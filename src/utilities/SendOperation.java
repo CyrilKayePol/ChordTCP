@@ -6,8 +6,10 @@ import java.io.Serializable;
 import java.net.Socket;
 
 import message.Message;
+import message.MessageWithFileNode;
 import message.MessageWithIndex;
 import message.MessageWithNode;
+import message.MessageWithText;
 import node.Node;
 
 @SuppressWarnings("resource")
@@ -68,6 +70,26 @@ public class SendOperation implements Serializable {
 			Socket s = new Socket(receiverNode.getIP(), receiverNode.getPort());
 			ObjectOutputStream out = new ObjectOutputStream(s.getOutputStream());
 			out.writeObject(new MessageWithIndex(message, msgNode,nodeFixing, index));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public void sendMessageWithFileNode(int message, Node msgNode, Node fileEventNode, Node receiverNode) {
+		try {
+			Socket s = new Socket(receiverNode.getIP(), receiverNode.getPort());
+			ObjectOutputStream out = new ObjectOutputStream(s.getOutputStream());
+			out.writeObject(new MessageWithFileNode(message, msgNode,fileEventNode));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public void sendMessageWithText(int message, Node msgNode, String text, Node receiverNode) {
+		try {
+			Socket s = new Socket(receiverNode.getIP(), receiverNode.getPort());
+			ObjectOutputStream out = new ObjectOutputStream(s.getOutputStream());
+			out.writeObject(new MessageWithText(message, msgNode,text));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

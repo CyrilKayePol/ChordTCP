@@ -16,6 +16,11 @@ public class Type {
 	public static final int DONE_FIXING_MY_FINGER_TABLE = 16;
 	public static final int NEW_FINGER_VALUE =17;
 	public static final int FIND_FINGER_SUCCESSOR =20;
+	public static final int FIND_FILE_SUCCESSOR = 21;
+	public static final int FOUND_FILE_SUCCESSOR = 22;
+	public static final int REQUEST_TO_SEND_FILE = 23;
+	public static final int READY_TO_SAVE_FILE = 24;
+	
 	
 	
 	/*Peer Types*/

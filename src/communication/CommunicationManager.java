@@ -3,9 +3,12 @@ package communication;
 import java.io.ObjectInputStream;
 import java.net.Socket;
 
+import fileEvent.FileEvent;
 import message.Message;
+import message.MessageWithFileNode;
 import message.MessageWithIndex;
 import message.MessageWithNode;
+import message.MessageWithText;
 import node.Node;
 import peer.Host;
 import utilities.SendOperation;
@@ -18,11 +21,13 @@ public class CommunicationManager {
 	
 	private Node myNode;
 	private SendOperation sendOperation;
+	private FileEvent fileEvent;
 	
 	public CommunicationManager(Socket socket, Node myNode) {
 		this.socket = socket;
 		this.myNode = myNode;
 		sendOperation = SendOperation.getInstance();
+		fileEvent = FileEvent.getInstance();
 		communicationProcess();
 	
 	}
@@ -43,8 +48,20 @@ public class CommunicationManager {
 				
 				myNode.setFinger(msg.getNode(), msg.getIndex());
 			}
-		
-		}if(input instanceof MessageWithNode) {
+		}else if(input instanceof MessageWithFileNode) {
+			 MessageWithFileNode msg = (MessageWithFileNode) input;
+			 if(msg.getType() == Type.FIND_FILE_SUCCESSOR) {
+				 myNode.findSuccessor(msg.getNode(), msg.getFileEventNode());
+			 }
+		}else if(input instanceof MessageWithText) {
+			MessageWithText msg = (MessageWithText) input;
+			if(msg.getType() == Type.REQUEST_TO_SEND_FILE) {
+				sendOperation.sendMessageWithNode(Type.READY_TO_SAVE_FILE, myNode, msg.getNode());
+				//should i send message with text?
+				fileEvent.saveFile(msg.getNode().getIP(), msg.getNode().getPort(), msg.getText());
+				
+			}
+		}else if(input instanceof MessageWithNode) {
 			
 			MessageWithNode msg = (MessageWithNode) input;
 			if(msg.getType() == Type.REQUEST_FOR_RANDOM_NODE){
@@ -81,6 +98,11 @@ public class CommunicationManager {
 			}else if(msg.getType() == Type.UPDATE_SUCCESSOR) {
 				myNode.setSuccessor(msg.getNode());
 				sendOperation.sendMessageWithNode(Type.UPDATE_PREDECESSOR, myNode, msg.getNode());
+			}else if(msg.getType() == Type.FOUND_FILE_SUCCESSOR) {
+				sendOperation.sendMessageWithText(Type.REQUEST_TO_SEND_FILE, myNode, myNode.getFileName(), msg.getNode());
+				
+			}else if(msg.getType() == Type.READY_TO_SAVE_FILE) {
+				fileEvent.sendFile(msg.getNode().getIP(), msg.getNode().getPort(), myNode.getFilePath());
 			}
 			
 		}else if(input instanceof Message) {

@@ -8,7 +8,8 @@ import java.util.Scanner;
 
 import communication.CommunicationManager;
 import node.Node;
-import utilities.MenuOperations;
+import utilities.Operation;
+import utilities.SendOperation;
 import utilities.Type;
 
 public class Peer extends Thread {
@@ -18,6 +19,8 @@ public class Peer extends Thread {
 	private Socket clientSocket; 
 	private Scanner scan;
 	private Menu m;
+	private Operation operation;
+	private SendOperation sendOperation;
 	
 	public Peer(String ip, int port, int peerType) {
 		myNode = new Node(ip,port);
@@ -112,12 +115,22 @@ public class Peer extends Thread {
 
 		
 		private void downloadFile() {
+			System.out.println(">>>>>>>download a file<<<<<<<");
+			System.out.print("Enter file name: ");
+			String fileName = scan.nextLine();
+			System.out.println();
 			
+			System.out.println(">>>>>>>>>>>>><<<<<<<<<<<<<<");
 		}
 
 		
 		private void uploadFile() {
+			System.out.println(">>>>>>>upload a file<<<<<<<");
+			System.out.print("Enter file's path: ");
+			String path = scan.nextLine();
+			System.out.println();
 			
+			System.out.println(">>>>>>>>>>>>><<<<<<<<<<<<<<");
 		}
 
 		

@@ -9,7 +9,7 @@ import utilities.Type;
 public class Node implements Serializable {
 
 	private static final long serialVersionUID = 1L;
-	private String ip;
+	private String ip, fileName, filePath;
 	private int port;
 	private BigInteger id;
 	private Node successor, predecessor;
@@ -106,6 +106,23 @@ public class Node implements Serializable {
 		
 	}
 	
+	public void findSuccessor(Node node, Node fileEventNode) {
+		
+		if(isIDinRange(node.getID()) || isSucEqualPredAndGreaterNodeID(node.getID())
+				|| isIDGreaterThanSuccessor(node)) {
+			
+			sendOperation.sendMessageWithNode(Type.FOUND_FILE_SUCCESSOR, successor, fileEventNode);
+		}else if(isPredEqualSucAndLessNodeID(node.getID())) {
+			
+			sendOperation.sendMessageWithNode(Type.FOUND_FILE_SUCCESSOR, this, fileEventNode);
+		}else {
+			
+			Node pass = closestPreceedingNode(node);
+			sendOperation.sendMessageWithFileNode(Type.FIND_FILE_SUCCESSOR, node,fileEventNode, pass);
+		}
+		
+	}
+	
 	
 	private boolean isIDinRange(BigInteger nodeID) {
 		boolean bool =  (nodeID.compareTo(id) == 1 && 
@@ -170,6 +187,21 @@ public class Node implements Serializable {
 		
 		sendOperation.sendMessageWithNodeToHost(Type.REQUEST_FOR_RANDOM_NODE, this);
 		
+	}
+	
+	public void uploadFile(String filePath) {
+		this.filePath = filePath;
+		BigInteger fileID = operation.computeID(filePath);
+		fileName = operation.extractFileName(filePath);
+		findSuccessor(new Node(fileID), this);
+	}
+	
+	public String getFileName() {
+		return fileName;
+	}
+	
+	public String getFilePath() {
+		return filePath;
 	}
 		
 	
