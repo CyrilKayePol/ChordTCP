@@ -8,8 +8,6 @@ import java.util.Scanner;
 
 import communication.CommunicationManager;
 import node.Node;
-import utilities.Operation;
-import utilities.SendOperation;
 import utilities.Type;
 
 public class Peer extends Thread {
@@ -19,9 +17,7 @@ public class Peer extends Thread {
 	private Socket clientSocket; 
 	private Scanner scan;
 	private Menu m;
-	private Operation operation;
-	private SendOperation sendOperation;
-	
+	private Stabilize stabilize;
 	public Peer(String ip, int port, int peerType) {
 		myNode = new Node(ip,port);
 		
@@ -29,20 +25,22 @@ public class Peer extends Thread {
 			myNode.setID(new BigInteger("20"));
 			myNode.initializeNeighbors();
 		}else {
-			myNode.setPort(5601);
-			myNode.setID(new BigInteger("99"));
+			myNode.setPort(5000);
+			myNode.setID(new BigInteger("0"));
 			myNode.joinRing();
 		}
 		
 		initialize();
 		start();
 		m.start();
+		//if(peerType == Type.HOST)
+			stabilize.start();
 	}
-	
 	
 	private void initialize() {
 		scan = new Scanner(System.in);
 		m = new Menu();
+		stabilize = new Stabilize();
 		try {
 			serverSocket = new ServerSocket(myNode.getPort());
 		} catch (IOException e) {
@@ -54,7 +52,7 @@ public class Peer extends Thread {
 		while(true) {
 			try {
 				clientSocket = serverSocket.accept();
-				new CommunicationManager(clientSocket, myNode);
+				new CommunicationManager(clientSocket, myNode).start();
 				
 			}catch(IOException e) {
 				e.printStackTrace();
@@ -70,7 +68,7 @@ public class Peer extends Thread {
 		
 		public void run() {
 			while(true) {
-				menu();
+					menu();
 			}
 		}
 		
@@ -119,29 +117,44 @@ public class Peer extends Thread {
 			System.out.print("Enter file name: ");
 			String fileName = scan.nextLine();
 			System.out.println();
-			
 			System.out.println(">>>>>>>>>>>>><<<<<<<<<<<<<<");
+			myNode.downloadFile(fileName);
 		}
 
 		
 		private void uploadFile() {
 			System.out.println(">>>>>>>upload a file<<<<<<<");
 			System.out.print("Enter file's path: ");
-			String path = scan.nextLine();
+			String filePath = scan.nextLine();
 			System.out.println();
-			
 			System.out.println(">>>>>>>>>>>>><<<<<<<<<<<<<<");
+			myNode.uploadFile(filePath);
 		}
 
 		
 		private void exitRing() {
-			
+			System.out.println("B Y E ^.^");
+			System.exit(0);
 		}
 
 		
 		private void warning() {
-			
+			System.out.println("[Invalid input! Please try again.]");
 		}
 		
+	}
+	
+	private class Stabilize extends Thread{
+		public void run() {
+			while(true) {
+				try {
+					Thread.sleep(5000);
+					myNode.checkPredecessor();
+				} catch (InterruptedException e) {
+					
+					e.printStackTrace();
+				}
+			}
+		}
 	}
 }

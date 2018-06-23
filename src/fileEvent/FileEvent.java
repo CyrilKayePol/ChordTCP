@@ -1,62 +1,64 @@
 package fileEvent;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.net.Socket;
 
-public class FileEvent {
-	
-	private static FileEvent fileEvent;
-	public static FileEvent getInstance() {
-		return (fileEvent == null)?(fileEvent = new FileEvent()):fileEvent;
+import java.io.Serializable;
+
+public class FileEvent implements Serializable {
+
+	private static final long serialVersionUID = 1L;
+
+	private String destinationDirectory;
+	private String sourceDirectory;
+	private String filename;
+	private long fileSize;
+	private byte[] fileData;
+	private String status;
+
+	public String getDestinationDirectory() {
+		return destinationDirectory;
 	}
-	
-	@SuppressWarnings("resource")
-	public void saveFile(String ip, int port, String name){
-		DataInputStream dis;
-		FileOutputStream fos;
-		try {
-			Socket socket = new Socket(ip,port);
-			dis = new DataInputStream(socket.getInputStream());
-			fos = new FileOutputStream("clientFiles/"+name);
-			byte[] buffer = new byte[1024000];
-			
-			int read = 0;
-			while((read = dis.read(buffer, 0, buffer.length)) > 0) {
-				fos.write(buffer, 0, read);
-			}
-			fos.close();
-			dis.close();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	
+
+	public void setDestinationDirectory(String destinationDirectory) {
+		this.destinationDirectory = destinationDirectory;
 	}
-	
-	@SuppressWarnings("resource")
-	public void sendFile(String ip, int port, String filePath){
-		
-		DataOutputStream dos;
-		FileInputStream fis;
-		try {
-			
-			Socket socket = new Socket(ip,port);
-			dos = new DataOutputStream(socket.getOutputStream());
-			fis = new FileInputStream(filePath);
-			byte[] buffer = new byte[1024000];
-			while (fis.read(buffer) > 0) {
-				dos.write(buffer);
-			}
-			
-			fis.close();
-			dos.close();	
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		
-		
-		
+
+	public String getSourceDirectory() {
+		return sourceDirectory;
+	}
+
+	public void setSourceDirectory(String sourceDirectory) {
+		this.sourceDirectory = sourceDirectory;
+	}
+
+	public String getFilename() {
+		return filename;
+	}
+
+	public void setFilename(String filename) {
+		this.filename = filename;
+	}
+
+	public long getFileSize() {
+		return fileSize;
+	}
+
+	public void setFileSize(long fileSize) {
+		this.fileSize = fileSize;
+	}
+
+	public String getStatus() {
+		return status;
+	}
+
+	public void setStatus(String status) {
+		this.status = status;
+	}
+
+	public byte[] getFileData() {
+		return fileData;
+	}
+
+	public void setFileData(byte[] fileData) {
+		this.fileData = fileData;
 	}
 }

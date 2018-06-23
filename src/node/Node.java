@@ -15,12 +15,13 @@ public class Node implements Serializable {
 	private Node successor, predecessor;
 	private Operation operation = Operation.getInstance();
 	private SendOperation sendOperation;
+	private int fileOperation;
 	
 	private Finger[] finger;
 	
 	public Node (String ip, int port) {
 		this.ip = ip;
-		this.port = port;
+		this.port = port; 
 		this.id = operation.computeID(ip+port);
 		finger = new Finger[5];
 		sendOperation = SendOperation.getInstance();
@@ -74,11 +75,12 @@ public class Node implements Serializable {
 	
 	public void findSuccessor(Node node) {
 		
-		if(isIDinRange(node.getID()) || isSucEqualPredAndGreaterNodeID(node.getID())
+		if(isIDinRange(node.getID()) || isSucEqualPredAndGreaterID(node.getID())|| isSucEqualPredAndGreaterSuc(node.getID())
 				|| isIDGreaterThanSuccessor(node)) {
 			
 			sendOperation.sendMessageWithNode(Type.FOUND_SUCCESSOR, successor, node);
-		}else if(isPredEqualSucAndLessNodeID(node.getID())) {
+		}else if(isPredEqualSucAndLargeNodeID(node.getID())|| isPredEqualSucAndLargerSuc(node.getID())
+				|| isPredSucIDEqual()) {
 			
 			sendOperation.sendMessageWithNode(Type.FOUND_SUCCESSOR, this, node);
 		}else {
@@ -91,13 +93,14 @@ public class Node implements Serializable {
 	
 	public void findSuccessor(Node node, Node nodeFixing, int index) {
 		
-		if(isIDinRange(node.getID()) || isSucEqualPredAndGreaterNodeID(node.getID())
+		if(isIDinRange(node.getID()) || isSucEqualPredAndGreaterID(node.getID()) || isSucEqualPredAndGreaterSuc(node.getID())
 				|| isIDGreaterThanSuccessor(node)) {
 	
 			sendOperation.sendMessageWithIndex(Type.NEW_FINGER_VALUE,successor, nodeFixing,nodeFixing, index);
 			
 			
-		}else if(isPredEqualSucAndLessNodeID(node.getID())) {
+		}else if(isPredEqualSucAndLargeNodeID(node.getID())|| isPredEqualSucAndLargerSuc(node.getID())
+				|| isPredSucIDEqual()) {
 			sendOperation.sendMessageWithIndex(Type.NEW_FINGER_VALUE,this, nodeFixing,nodeFixing, index);
 		}else {
 			
@@ -108,16 +111,18 @@ public class Node implements Serializable {
 	
 	public void findSuccessor(Node node, Node fileEventNode) {
 		
-		if(isIDinRange(node.getID()) || isSucEqualPredAndGreaterNodeID(node.getID())
+		if(isIDinRange(node.getID()) || isSucEqualPredAndGreaterID(node.getID())||isSucEqualPredAndGreaterSuc(node.getID())
 				|| isIDGreaterThanSuccessor(node)) {
-			
+			System.out.println("I "+id+" found file successor "+node.getID()+" = "+successor.getID());
 			sendOperation.sendMessageWithNode(Type.FOUND_FILE_SUCCESSOR, successor, fileEventNode);
-		}else if(isPredEqualSucAndLessNodeID(node.getID())) {
-			
+		}else if(isPredEqualSucAndLargeNodeID(node.getID()) || isPredEqualSucAndLargerSuc(node.getID())
+				|| isPredSucIDEqual()) {
+			System.out.println("I "+id+" found file successor "+node.getID()+" = "+id);
 			sendOperation.sendMessageWithNode(Type.FOUND_FILE_SUCCESSOR, this, fileEventNode);
 		}else {
 			
 			Node pass = closestPreceedingNode(node);
+			System.out.println("pass find file successor to "+pass.getID());
 			sendOperation.sendMessageWithFileNode(Type.FIND_FILE_SUCCESSOR, node,fileEventNode, pass);
 		}
 		
@@ -131,16 +136,35 @@ public class Node implements Serializable {
 		return bool;
 	}
 	
-	private boolean isSucEqualPredAndGreaterNodeID(BigInteger nodeID) {
+	private boolean isSucEqualPredAndGreaterID(BigInteger nodeID) {
 		if(predecessor == null) return false;
 		return (predecessor.getID().compareTo(successor.getID()) == 0 
-				&& nodeID.compareTo(successor.getID()) == -1);
+				&& nodeID.compareTo(id) == -1 && id.compareTo(successor.getID())==1);
 	}
 	
-	private boolean isPredEqualSucAndLessNodeID(BigInteger nodeID) {
+	private boolean isSucEqualPredAndGreaterSuc(BigInteger nodeID) {
 		if(predecessor == null) return false;
 		return (predecessor.getID().compareTo(successor.getID()) == 0 
-				&& nodeID.compareTo(successor.getID()) == 1);
+				&& nodeID.compareTo(id) == 1 && nodeID.compareTo(successor.getID())==-1);
+	}
+	
+	private boolean isPredEqualSucAndLargeNodeID(BigInteger nodeID) {
+		if(predecessor == null) return false;
+		return (predecessor.getID().compareTo(successor.getID()) == 0 
+				&& nodeID.compareTo(id) == 1 && nodeID.compareTo(successor.getID()) == 1);
+	}
+	
+	private boolean isPredEqualSucAndLargerSuc(BigInteger nodeID) {
+		if(predecessor == null) return false;
+		return (predecessor.getID().compareTo(successor.getID()) == 0 
+				&& nodeID.compareTo(id) == -1 && id.compareTo(successor.getID()) == -1);
+	}
+	
+	private boolean isPredSucIDEqual() {
+		//System.out.println(id+":"+predecessor.getID()+":"+successor.getID());
+		if(predecessor == null) return false;
+		return(predecessor.getID().compareTo(successor.getID()) == 0 &&
+				predecessor.getID().compareTo(id) == 0);
 	}
 	
 	private boolean isIDGreaterThanSuccessor(Node node) {
@@ -184,16 +208,29 @@ public class Node implements Serializable {
 	}
 	
 	public void joinRing() {
-		
+		System.out.println("attempting to join ring...");
 		sendOperation.sendMessageWithNodeToHost(Type.REQUEST_FOR_RANDOM_NODE, this);
 		
 	}
 	
 	public void uploadFile(String filePath) {
+		fileOperation = Type.UPLOAD;
 		this.filePath = filePath;
-		BigInteger fileID = operation.computeID(filePath);
+		BigInteger fileID = new BigInteger("12");
 		fileName = operation.extractFileName(filePath);
+		//BigInteger fileID = operation.computeID(fileName);
 		findSuccessor(new Node(fileID), this);
+	}
+	
+	public void downloadFile(String fileName) {
+		fileOperation = Type.DOWNLOAD;
+		this.fileName = fileName;
+		BigInteger fileID = operation.computeID(fileName);
+		findSuccessor(new Node(fileID), this);
+	}
+	
+	public int getFileOperationType() {
+		return fileOperation;
 	}
 	
 	public String getFileName() {
@@ -202,6 +239,10 @@ public class Node implements Serializable {
 	
 	public String getFilePath() {
 		return filePath;
+	}
+	
+	public void checkPredecessor() {
+		sendOperation.sendMessageWithNodeForExit(Type.ARE_YOU_STILL_ALIVE, this, predecessor);
 	}
 		
 	

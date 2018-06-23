@@ -18,14 +18,20 @@ public class Type {
 	public static final int FIND_FINGER_SUCCESSOR =20;
 	public static final int FIND_FILE_SUCCESSOR = 21;
 	public static final int FOUND_FILE_SUCCESSOR = 22;
-	public static final int REQUEST_TO_SEND_FILE = 23;
-	public static final int READY_TO_SAVE_FILE = 24;
-	
-	
+	public static final int FILE_TO_STORE = 23;
+	public static final int REQUESTING_TO_DOWNLOAD = 24;
+	public static final int ARE_YOU_STILL_ALIVE = 25;
+	public static final int IM_ALIVE_ALERT_AWAKE = 26;
+	public static final int CHECKING_ZOMBIE_SUCCESSOR = 27;
+	public static final int DEAD_NODE = 28;
 	
 	/*Peer Types*/
 	public static final int HOST = 100;
 	public static final int CLIENT = 200;
+	
+	/*File Operation Types*/
+	public static final int UPLOAD = 300;
+	public static final int DOWNLOAD = 400;
 	
 	
 	

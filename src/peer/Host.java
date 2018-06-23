@@ -45,4 +45,19 @@ public class Host extends Peer{
 		connectedNodes.add(n);
 	}
 	
+	public void removeNodeFromConnectedNodes(Node n) {
+		for(int i = 0;i<connectedNodes.size();i++) {
+			if(connectedNodes.get(i).getID().compareTo(n.getID())==0) {
+				connectedNodes.remove(i);
+				break;
+			}
+		}
+	}
+	
+	public void print() {
+		 for(int i = 0;i<connectedNodes.size();i++) {
+			 System.out.println("nodes: "+connectedNodes.get(i).getID());
+		 }
+	}
+	
 }
