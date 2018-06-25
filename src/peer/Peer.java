@@ -25,8 +25,8 @@ public class Peer extends Thread {
 			myNode.setID(new BigInteger("20"));
 			myNode.initializeNeighbors();
 		}else {
-			myNode.setPort(5016);
-			myNode.setID(new BigInteger("51"));
+			myNode.setPort(5017);
+			myNode.setID(new BigInteger("18"));
 			myNode.joinRing();
 		}
 		

@@ -20,7 +20,7 @@ public class SendOperation implements Serializable {
 	
 	private static final long serialVersionUID = 1L;
 	private static SendOperation sendOperation;
-	private String hostIP = "192.168.1.111";
+	private String hostIP = "localhost";
 	private int hostPort = 4444;
 	
 	public static SendOperation getInstance() {
@@ -130,6 +130,21 @@ public class SendOperation implements Serializable {
 		} catch (IOException e) {
 			//e.printStackTrace();
 			sendMessageWithFileEvent(message, msgNode, fevent, receiverNode);
+		}
+	}
+	
+	public void sendMessageWithFileEventToHost(int message, Node msgNode, FileEvent fevent) {
+		try {
+			Socket s = new Socket(hostIP, hostPort);
+			ObjectOutputStream out = new ObjectOutputStream(s.getOutputStream());
+			System.out.println("sending file ...");
+			out.reset();
+			out.writeObject(new MessageWithFileEvent(message,fevent));
+			out.reset();
+			System.out.println("sent the fudging file");
+		} catch (IOException e) {
+			//e.printStackTrace();
+			sendMessageWithFileEventToHost(message, msgNode, fevent);
 		}
 	}
 	

@@ -1,7 +1,11 @@
 package peer;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Random;
+
+import org.apache.commons.io.FileUtils;
 
 import node.Node;
 import utilities.SendOperation;
@@ -12,16 +16,19 @@ public class Host extends Peer{
 	private static Host host;
 	private ArrayList<Node> connectedNodes;
 	private SendOperation sendOperation;
+	private CleanCache cleanCache;
 	
 	public Host(String ip, int port) {
 		super(ip, port, Type.HOST);
 		initialize();
+		cleanCache.start();
 		addNewConnectedNode(host.getMyNode());
 	}
 	
 	private void initialize() {
 		connectedNodes = new ArrayList<Node>();
 		sendOperation = SendOperation.getInstance();
+		cleanCache = new CleanCache();
 		host = this;
 	}
 	
@@ -58,6 +65,19 @@ public class Host extends Peer{
 		 for(int i = 0;i<connectedNodes.size();i++) {
 			 System.out.println("nodes: "+connectedNodes.get(i).getID());
 		 }
+	}
+	
+	private class CleanCache extends Thread{
+		public void run() {
+			while(true) {
+				try {
+					Thread.sleep(1000 * 3600 * 8);
+					FileUtils.cleanDirectory(new File("cached files/"));
+				} catch (Exception e) {
+					e.printStackTrace();
+				} 
+			}
+		}
 	}
 	
 }

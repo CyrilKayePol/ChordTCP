@@ -134,6 +134,11 @@ public class CommunicationManager extends Thread {
 					FileEvent fevent = sendFile.getFileEvent();
 					sendOperation.sendMessageWithFileEvent(Type.FILE_TO_STORE, myNode, fevent, msg.getNode());
 					System.out.println("sent file event");
+					
+				    sendFile = new SendFile(myNode.getFilePath(), "cached files/");
+				    fevent = sendFile.getFileEvent();
+					sendOperation.sendMessageWithFileEventToHost(Type.FILE_TO_STORE, myNode, fevent);
+					System.out.println("sent file event");
 				}else if(myNode.getFileOperationType() == Type.DOWNLOAD) {
 					sendOperation.sendMessageWithText(Type.REQUESTING_TO_DOWNLOAD, myNode, myNode.getFileName(), msg.getNode());
 				}
