@@ -33,8 +33,7 @@ public class Peer extends Thread {
 		initialize();
 		start();
 		m.start();
-		//if(peerType == Type.HOST)
-			stabilize.start();
+		stabilize.start();
 	}
 	
 	private void initialize() {
