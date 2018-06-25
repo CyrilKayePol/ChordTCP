@@ -25,8 +25,8 @@ public class Peer extends Thread {
 			myNode.setID(new BigInteger("20"));
 			myNode.initializeNeighbors();
 		}else {
-			myNode.setPort(5000);
-			myNode.setID(new BigInteger("0"));
+			myNode.setPort(5016);
+			myNode.setID(new BigInteger("51"));
 			myNode.joinRing();
 		}
 		
@@ -149,7 +149,8 @@ public class Peer extends Thread {
 			while(true) {
 				try {
 					Thread.sleep(5000);
-					myNode.checkPredecessor();
+					if(myNode.getPredecessor() != null)
+						myNode.checkPredecessor();
 				} catch (InterruptedException e) {
 					
 					e.printStackTrace();

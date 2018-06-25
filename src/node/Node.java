@@ -80,7 +80,7 @@ public class Node implements Serializable {
 			
 			sendOperation.sendMessageWithNode(Type.FOUND_SUCCESSOR, successor, node);
 		}else if(isPredEqualSucAndLargeNodeID(node.getID())|| isPredEqualSucAndLargerSuc(node.getID())
-				|| isPredSucIDEqual()) {
+				|| isPredSucIDEqual()|| isPredEqualSucAndGreaterID(node.getID())) {
 			
 			sendOperation.sendMessageWithNode(Type.FOUND_SUCCESSOR, this, node);
 		}else {
@@ -100,7 +100,7 @@ public class Node implements Serializable {
 			
 			
 		}else if(isPredEqualSucAndLargeNodeID(node.getID())|| isPredEqualSucAndLargerSuc(node.getID())
-				|| isPredSucIDEqual()) {
+				|| isPredSucIDEqual()|| isPredEqualSucAndGreaterID(node.getID())) {
 			sendOperation.sendMessageWithIndex(Type.NEW_FINGER_VALUE,this, nodeFixing,nodeFixing, index);
 		}else {
 			
@@ -116,7 +116,7 @@ public class Node implements Serializable {
 			System.out.println("I "+id+" found file successor "+node.getID()+" = "+successor.getID());
 			sendOperation.sendMessageWithNode(Type.FOUND_FILE_SUCCESSOR, successor, fileEventNode);
 		}else if(isPredEqualSucAndLargeNodeID(node.getID()) || isPredEqualSucAndLargerSuc(node.getID())
-				|| isPredSucIDEqual()) {
+				|| isPredSucIDEqual() || isPredEqualSucAndGreaterID(node.getID())) {
 			System.out.println("I "+id+" found file successor "+node.getID()+" = "+id);
 			sendOperation.sendMessageWithNode(Type.FOUND_FILE_SUCCESSOR, this, fileEventNode);
 		}else {
@@ -139,7 +139,7 @@ public class Node implements Serializable {
 	private boolean isSucEqualPredAndGreaterID(BigInteger nodeID) {
 		if(predecessor == null) return false;
 		return (predecessor.getID().compareTo(successor.getID()) == 0 
-				&& nodeID.compareTo(id) == -1 && id.compareTo(successor.getID())==1);
+				&& nodeID.compareTo(id) == -1 && id.compareTo(successor.getID())==1 && nodeID.compareTo(successor.getID()) == -1);
 	}
 	
 	private boolean isSucEqualPredAndGreaterSuc(BigInteger nodeID) {
@@ -158,6 +158,12 @@ public class Node implements Serializable {
 		if(predecessor == null) return false;
 		return (predecessor.getID().compareTo(successor.getID()) == 0 
 				&& nodeID.compareTo(id) == -1 && id.compareTo(successor.getID()) == -1);
+	}
+	
+	private boolean isPredEqualSucAndGreaterID(BigInteger nodeID) {
+		if(predecessor == null) return false;
+		return (predecessor.getID().compareTo(successor.getID()) == 0 
+				&& nodeID.compareTo(id) == -1 && id.compareTo(successor.getID())==1 && nodeID.compareTo(successor.getID()) == 1);
 	}
 	
 	private boolean isPredSucIDEqual() {

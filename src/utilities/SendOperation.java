@@ -20,7 +20,7 @@ public class SendOperation implements Serializable {
 	
 	private static final long serialVersionUID = 1L;
 	private static SendOperation sendOperation;
-	private String hostIP = "localhost";
+	private String hostIP = "192.168.1.111";
 	private int hostPort = 4444;
 	
 	public static SendOperation getInstance() {
@@ -34,7 +34,8 @@ public class SendOperation implements Serializable {
 			ObjectOutputStream out = new ObjectOutputStream(s.getOutputStream());
 			out.writeObject(new MessageWithNode(message, msgNode));
 		} catch (IOException e) {
-			e.printStackTrace();
+			//e.printStackTrace();
+			sendMessageWithNode(message, msgNode, receiverNode);
 		}
 	}
 	
@@ -44,7 +45,8 @@ public class SendOperation implements Serializable {
 			ObjectOutputStream out = new ObjectOutputStream(s.getOutputStream());
 			out.writeObject(new Message(message));
 		} catch (IOException e) {
-			e.printStackTrace();
+			//e.printStackTrace();
+			sendMessage(message, receiverNode);
 		}
 	}
 	
@@ -78,7 +80,8 @@ public class SendOperation implements Serializable {
 			ObjectOutputStream out = new ObjectOutputStream(s.getOutputStream());
 			out.writeObject(new Message(message));
 		} catch (IOException e) {
-			e.printStackTrace();
+			//e.printStackTrace();
+			sendMessageToHost(message);
 		}
 	}
 	
@@ -88,7 +91,8 @@ public class SendOperation implements Serializable {
 			ObjectOutputStream out = new ObjectOutputStream(s.getOutputStream());
 			out.writeObject(new MessageWithNode(message, msgNode));
 		} catch (IOException e) {
-			e.printStackTrace();
+			//e.printStackTrace();
+			sendMessageWithNodeToHost(message, msgNode);
 		}
 	}
 	
@@ -98,7 +102,8 @@ public class SendOperation implements Serializable {
 			ObjectOutputStream out = new ObjectOutputStream(s.getOutputStream());
 			out.writeObject(new MessageWithIndex(message, msgNode,nodeFixing, index));
 		} catch (IOException e) {
-			e.printStackTrace();
+			//e.printStackTrace();
+			sendMessageWithIndex(message, msgNode, receiverNode, nodeFixing, index);
 		}
 	}
 	
@@ -108,7 +113,8 @@ public class SendOperation implements Serializable {
 			ObjectOutputStream out = new ObjectOutputStream(s.getOutputStream());
 			out.writeObject(new MessageWithFileNode(message, msgNode,fileEventNode));
 		} catch (IOException e) {
-			e.printStackTrace();
+			//e.printStackTrace();
+			sendMessageWithFileNode(message, msgNode, fileEventNode,receiverNode);
 		}
 	}
 	
@@ -122,7 +128,8 @@ public class SendOperation implements Serializable {
 			out.reset();
 			System.out.println("sent the fudging file");
 		} catch (IOException e) {
-			e.printStackTrace();
+			//e.printStackTrace();
+			sendMessageWithFileEvent(message, msgNode, fevent, receiverNode);
 		}
 	}
 	
@@ -132,7 +139,8 @@ public class SendOperation implements Serializable {
 			ObjectOutputStream out = new ObjectOutputStream(s.getOutputStream());
 			out.writeObject(new MessageWithText(message, msgNode,text));
 		} catch (IOException e) {
-			e.printStackTrace();
+			//e.printStackTrace();
+			sendMessageWithText(message, msgNode, text, receiverNode);
 		}
 	}
 }
